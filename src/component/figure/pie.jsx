@@ -4,47 +4,72 @@ import echarts from "echarts/lib/echarts";
 import myChart from "echarts-for-react";
 
 class Pie extends Component {
-  getOption = () => {
-    let option = {
-      title: {
-        text: "某站点用户访问来源",
-        subtext: "纯属虚构",
-        x: "center"
-      },
-      tooltip: {
-        trigger: "item",
-        formatter: "{a} <br/>{b} : {c} ({d}%)"
-      },
-      legend: {
-        orient: "vertical",
-        left: "left",
-        data: ["直接访问", "邮件营销", "联盟广告", "视频广告", "搜索引擎"]
-      },
-      series: [
-        {
-          name: "访问来源",
-          type: "pie",
-          radius: "55%",
-          center: ["50%", "60%"],
-          data: [
-            { value: 335, name: "直接访问" },
-            { value: 310, name: "邮件营销" },
-            { value: 234, name: "联盟广告" },
-            { value: 135, name: "视频广告" },
-            { value: 1548, name: "搜索引擎" }
-          ],
-          itemStyle: {
-            emphasis: {
-              shadowBlur: 10,
-              shadowOffsetX: 0,
-              shadowColor: "rgba(0, 0, 0, 0.5)"
+
+  constructor() {
+    super();
+    this.state = {
+      option: {}
+    };
+  }
+
+  componentDidMount = () => {
+    fetch('/data.json').then(res => {
+      return res.json();
+    }).then(json => {
+      let caculate = {}
+      for (let mouth in json) {
+        for (let day in json[mouth]) {
+          for (let data of json[mouth][day]) {
+            if (Object.keys(caculate).length === 0) {
+              //初始化
+              for (let item of data) {
+                caculate[item['type']] = 0
+              }
+            }
+            for (let item of data) {
+              caculate[item['type']] += item['value'];
             }
           }
         }
-      ]
-    };
-    console.log("option");
-    return option;
+      }
+      let data = [];
+      for (let key in caculate) {
+        data.push({ 'name': key, 'value': caculate[key] });
+      }
+      let option = {
+        title: {
+          text: "垃圾短信类别数据",
+          x: "center"
+        },
+        tooltip: {
+          trigger: "item",
+          formatter: "{a} <br/>{b} : {c} ({d}%)"
+        },
+        legend: {
+          orient: "vertical",
+          left: "left",
+          data: data.keys
+        },
+        series: [
+          {
+            name: "访问来源",
+            type: "pie",
+            radius: "55%",
+            center: ["50%", "60%"],
+            data: data,
+            itemStyle: {
+              emphasis: {
+                shadowBlur: 10,
+                shadowOffsetX: 0,
+                shadowColor: "rgba(0, 0, 0, 0.5)"
+              }
+            }
+          }
+        ]
+      };
+
+      this.setState({ option })
+    });
   };
 
   render() {
@@ -52,9 +77,9 @@ class Pie extends Component {
       <React.Fragment>
         <div>
           <ReactEcharts
-            option={this.getOption()}
+            option={this.state.option}
             theme="Imooc"
-            style={{ height: "600px", width: "500px" }}
+            style={{ height: "700px", width: "700px" }}
           />
         </div>
       </React.Fragment>

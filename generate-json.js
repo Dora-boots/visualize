@@ -14,6 +14,11 @@ let generatorJson = (callback) => {
                     data[mouthDirName][dayDirName] = [];
                     let dayFilePath = Path.join(mouthPath, dayDirName);
                     fs.readdir(dayFilePath, (err, dayFiles) => {
+
+                        //按照数字排序
+                        dayFiles = dayFiles.sort((a, b) => {
+                            return parseInt(a.substring(0, a.indexOf('.'))) - parseInt(b.substring(0, b.indexOf('.')))
+                        })
                         dayFiles.forEach((dayFileName) => {
                             if (!dayFileName.startsWith('msg')) {
                                 let day = Path.join(dayFilePath, dayFileName);
