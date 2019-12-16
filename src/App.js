@@ -1,6 +1,14 @@
-import React from 'react';
+import React, { Fragment, Component } from 'react';
 import './App.css';
-
-function App() {}
-
-export default App;
+import WordCloud from './component/figure/wordcloud';
+import Pie from './component/figure/pie'
+export default class App extends Component {
+    render() {
+        return (
+            <Fragment>
+                <WordCloud />
+                <Pie />
+            </Fragment>
+        )
+    }
+}
